@@ -10,52 +10,17 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface CommunityMessage {
-  'author' : string,
-  'message' : string,
-  'timestamp' : bigint,
-}
-export interface ContactSignup {
-  'name' : string,
-  'email' : string,
-  'message' : string,
-}
-export interface PeacePledge { 'name' : string, 'message' : string }
-export interface PeaceStory {
+export interface Message {
   'id' : bigint,
-  'region' : string,
-  'title' : string,
-  'imageHint' : string,
-  'author' : string,
-  'summary' : string,
-}
-export interface Resource {
-  'id' : bigint,
-  'typ' : string,
-  'url' : string,
-  'title' : string,
-  'description' : string,
-}
-export interface WorldInitiative {
-  'id' : bigint,
-  'latitude' : number,
-  'title' : string,
   'country' : string,
-  'description' : string,
-  'longitude' : number,
+  'name' : string,
+  'message' : string,
+  'timestamp' : Time,
 }
+export type Time = bigint;
 export interface _SERVICE {
-  'getContactSignups' : ActorMethod<[], Array<ContactSignup>>,
-  'getNewsletterSignups' : ActorMethod<[], Array<string>>,
-  'getPeacePledges' : ActorMethod<[], Array<PeacePledge>>,
-  'getPeaceStories' : ActorMethod<[], Array<PeaceStory>>,
-  'getRecentCommunityMessages' : ActorMethod<[], Array<CommunityMessage>>,
-  'getResources' : ActorMethod<[], Array<Resource>>,
-  'getWorldInitiatives' : ActorMethod<[], Array<WorldInitiative>>,
-  'postCommunityMessage' : ActorMethod<[string, string], undefined>,
-  'signupNewsletter' : ActorMethod<[string], undefined>,
-  'submitContactForm' : ActorMethod<[string, string, string], undefined>,
-  'submitPeacePledge' : ActorMethod<[string, string], undefined>,
+  'getAllMessages' : ActorMethod<[], Array<Message>>,
+  'submitMessage' : ActorMethod<[string, string, string], bigint>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

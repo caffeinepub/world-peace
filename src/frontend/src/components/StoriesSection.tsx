@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePeaceStories } from "@/hooks/useQueries";
-import type { PeaceStory } from "../backend.d";
+import type { PeaceStory } from "@/hooks/useQueries";
 
 const FALLBACK_STORIES: PeaceStory[] = [
   {

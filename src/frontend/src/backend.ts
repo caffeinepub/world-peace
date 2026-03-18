@@ -89,209 +89,45 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface Resource {
+export interface Message {
     id: bigint;
-    typ: string;
-    url: string;
-    title: string;
-    description: string;
-}
-export interface PeaceStory {
-    id: bigint;
-    region: string;
-    title: string;
-    imageHint: string;
-    author: string;
-    summary: string;
-}
-export interface WorldInitiative {
-    id: bigint;
-    latitude: number;
-    title: string;
     country: string;
-    description: string;
-    longitude: number;
-}
-export interface ContactSignup {
-    name: string;
-    email: string;
-    message: string;
-}
-export interface CommunityMessage {
-    author: string;
-    message: string;
-    timestamp: bigint;
-}
-export interface PeacePledge {
     name: string;
     message: string;
+    timestamp: Time;
 }
+export type Time = bigint;
 export interface backendInterface {
-    getContactSignups(): Promise<Array<ContactSignup>>;
-    getNewsletterSignups(): Promise<Array<string>>;
-    getPeacePledges(): Promise<Array<PeacePledge>>;
-    getPeaceStories(): Promise<Array<PeaceStory>>;
-    getRecentCommunityMessages(): Promise<Array<CommunityMessage>>;
-    getResources(): Promise<Array<Resource>>;
-    getWorldInitiatives(): Promise<Array<WorldInitiative>>;
-    postCommunityMessage(author: string, message: string): Promise<void>;
-    signupNewsletter(email: string): Promise<void>;
-    submitContactForm(name: string, email: string, message: string): Promise<void>;
-    submitPeacePledge(name: string, message: string): Promise<void>;
+    getAllMessages(): Promise<Array<Message>>;
+    submitMessage(name: string, country: string, messageText: string): Promise<bigint>;
 }
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
-    async getContactSignups(): Promise<Array<ContactSignup>> {
+    async getAllMessages(): Promise<Array<Message>> {
         if (this.processError) {
             try {
-                const result = await this.actor.getContactSignups();
+                const result = await this.actor.getAllMessages();
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getContactSignups();
+            const result = await this.actor.getAllMessages();
             return result;
         }
     }
-    async getNewsletterSignups(): Promise<Array<string>> {
+    async submitMessage(arg0: string, arg1: string, arg2: string): Promise<bigint> {
         if (this.processError) {
             try {
-                const result = await this.actor.getNewsletterSignups();
+                const result = await this.actor.submitMessage(arg0, arg1, arg2);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getNewsletterSignups();
-            return result;
-        }
-    }
-    async getPeacePledges(): Promise<Array<PeacePledge>> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getPeacePledges();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getPeacePledges();
-            return result;
-        }
-    }
-    async getPeaceStories(): Promise<Array<PeaceStory>> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getPeaceStories();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getPeaceStories();
-            return result;
-        }
-    }
-    async getRecentCommunityMessages(): Promise<Array<CommunityMessage>> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getRecentCommunityMessages();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getRecentCommunityMessages();
-            return result;
-        }
-    }
-    async getResources(): Promise<Array<Resource>> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getResources();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getResources();
-            return result;
-        }
-    }
-    async getWorldInitiatives(): Promise<Array<WorldInitiative>> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.getWorldInitiatives();
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.getWorldInitiatives();
-            return result;
-        }
-    }
-    async postCommunityMessage(arg0: string, arg1: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.postCommunityMessage(arg0, arg1);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.postCommunityMessage(arg0, arg1);
-            return result;
-        }
-    }
-    async signupNewsletter(arg0: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.signupNewsletter(arg0);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.signupNewsletter(arg0);
-            return result;
-        }
-    }
-    async submitContactForm(arg0: string, arg1: string, arg2: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.submitContactForm(arg0, arg1, arg2);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.submitContactForm(arg0, arg1, arg2);
-            return result;
-        }
-    }
-    async submitPeacePledge(arg0: string, arg1: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.submitPeacePledge(arg0, arg1);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.submitPeacePledge(arg0, arg1);
+            const result = await this.actor.submitMessage(arg0, arg1, arg2);
             return result;
         }
     }

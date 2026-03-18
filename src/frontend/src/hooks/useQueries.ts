@@ -1,127 +1,122 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type {
-  CommunityMessage,
-  PeacePledge,
-  PeaceStory,
-  Resource,
-  WorldInitiative,
-} from "../backend.d";
+import type { Message } from "../backend.d";
 import { useActor } from "./useActor";
 
+// Local type stubs for legacy sections that have their own fallback data
+export interface PeaceStory {
+  id: bigint;
+  region: string;
+  title: string;
+  summary: string;
+  author: string;
+  imageHint: string;
+}
+
+export interface WorldInitiative {
+  id: bigint;
+  country: string;
+  title: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+}
+
+export interface Resource {
+  id: bigint;
+  typ: string;
+  title: string;
+  description: string;
+  url: string;
+}
+
+export interface PeacePledge {
+  id: bigint;
+  name: string;
+  message: string;
+  timestamp: bigint;
+}
+
+// These hooks return empty arrays — the components use their own fallback data.
 export function usePeaceStories() {
-  const { actor, isFetching } = useActor();
   return useQuery<PeaceStory[]>({
     queryKey: ["peaceStories"],
-    queryFn: async () => {
-      if (!actor) return [];
-      return actor.getPeaceStories();
-    },
-    enabled: !!actor && !isFetching,
+    queryFn: async () => [],
+    enabled: false,
   });
 }
 
 export function useWorldInitiatives() {
-  const { actor, isFetching } = useActor();
   return useQuery<WorldInitiative[]>({
     queryKey: ["worldInitiatives"],
-    queryFn: async () => {
-      if (!actor) return [];
-      return actor.getWorldInitiatives();
-    },
-    enabled: !!actor && !isFetching,
+    queryFn: async () => [],
+    enabled: false,
   });
 }
 
 export function useResources() {
-  const { actor, isFetching } = useActor();
   return useQuery<Resource[]>({
     queryKey: ["resources"],
-    queryFn: async () => {
-      if (!actor) return [];
-      return actor.getResources();
-    },
-    enabled: !!actor && !isFetching,
-  });
-}
-
-export function useCommunityMessages() {
-  const { actor, isFetching } = useActor();
-  return useQuery<CommunityMessage[]>({
-    queryKey: ["communityMessages"],
-    queryFn: async () => {
-      if (!actor) return [];
-      return actor.getRecentCommunityMessages();
-    },
-    enabled: !!actor && !isFetching,
+    queryFn: async () => [],
+    enabled: false,
   });
 }
 
 export function usePeacePledges() {
-  const { actor, isFetching } = useActor();
   return useQuery<PeacePledge[]>({
     queryKey: ["peacePledges"],
-    queryFn: async () => {
-      if (!actor) return [];
-      return actor.getPeacePledges();
-    },
-    enabled: !!actor && !isFetching,
+    queryFn: async () => [],
+    enabled: false,
   });
 }
 
 export function useSubmitPledge() {
-  const { actor } = useActor();
-  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      name,
-      message,
-    }: { name: string; message: string }) => {
-      if (!actor) throw new Error("Not connected");
-      return actor.submitPeacePledge(name, message);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["peacePledges"] });
-    },
-  });
-}
-
-export function usePostCommunityMessage() {
-  const { actor } = useActor();
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async ({
-      author,
-      message,
-    }: { author: string; message: string }) => {
-      if (!actor) throw new Error("Not connected");
-      return actor.postCommunityMessage(author, message);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["communityMessages"] });
-    },
+    mutationFn: async (_: { name: string; message: string }) => BigInt(0),
   });
 }
 
 export function useSubmitContact() {
-  const { actor } = useActor();
   return useMutation({
-    mutationFn: async ({
-      name,
-      email,
-      message,
-    }: { name: string; email: string; message: string }) => {
-      if (!actor) throw new Error("Not connected");
-      return actor.submitContactForm(name, email, message);
-    },
+    mutationFn: async (_: { name: string; email: string; message: string }) =>
+      undefined,
   });
 }
 
 export function useSignupNewsletter() {
-  const { actor } = useActor();
   return useMutation({
-    mutationFn: async ({ email }: { email: string }) => {
+    mutationFn: async (_: { email: string }) => undefined,
+  });
+}
+
+// Community Wall — wired to the real backend, auto-refreshes every 8 seconds
+export function useAllMessages() {
+  const { actor, isFetching } = useActor();
+  return useQuery<Message[]>({
+    queryKey: ["allMessages"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getAllMessages();
+    },
+    enabled: !!actor && !isFetching,
+    refetchInterval: 8000,
+    refetchIntervalInBackground: false,
+  });
+}
+
+export function useSubmitMessage() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      name,
+      country,
+      messageText,
+    }: { name: string; country: string; messageText: string }) => {
       if (!actor) throw new Error("Not connected");
-      return actor.signupNewsletter(email);
+      return actor.submitMessage(name, country, messageText);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["allMessages"] });
     },
   });
 }

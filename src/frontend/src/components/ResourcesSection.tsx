@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useResources } from "@/hooks/useQueries";
+import type { Resource } from "@/hooks/useQueries";
 import { BookOpen, ExternalLink, FileText, Play } from "lucide-react";
 import { useState } from "react";
-import type { Resource } from "../backend.d";
 
 const FALLBACK_RESOURCES: Resource[] = [
   {
@@ -13,7 +13,7 @@ const FALLBACK_RESOURCES: Resource[] = [
     title: "A Long Walk to Freedom",
     description:
       "Nelson Mandela's autobiography traces his extraordinary journey from rural South Africa to the presidency, offering profound lessons on resilience and reconciliation.",
-    url: "#",
+    url: "https://books.google.com/books/about/Long_Walk_to_Freedom.html?id=E7dSNAAACAAJ",
   },
   {
     id: BigInt(2),
@@ -21,7 +21,7 @@ const FALLBACK_RESOURCES: Resource[] = [
     title: "The Science of Empathy",
     description:
       "A groundbreaking study from Stanford University explores how empathy practice can reduce prejudice and improve conflict resolution outcomes across diverse groups.",
-    url: "#",
+    url: "https://greatergood.berkeley.edu/article/item/how_empathy_can_break_down_prejudice",
   },
   {
     id: BigInt(3),
@@ -29,15 +29,15 @@ const FALLBACK_RESOURCES: Resource[] = [
     title: "Building Peace from the Ground Up",
     description:
       "A TED Talk by Nobel Peace Prize laureate Leymah Gbowee on how ordinary women ended Liberia's devastating civil war through nonviolent activism.",
-    url: "#",
+    url: "https://www.youtube.com/watch?v=5psHFqYaSbE",
   },
   {
     id: BigInt(4),
     typ: "Article",
     title: "Youth-Led Peace Initiatives: A Global Review",
     description:
-      "The UN Peace and Security Council's 2024 review of youth-led peacebuilding programs and their measurable impact on community-level violence.",
-    url: "#",
+      "The UN Peace and Security Council's review of youth-led peacebuilding programs and their measurable impact on community-level violence.",
+    url: "https://www.un.org/peacebuilding/youth",
   },
   {
     id: BigInt(5),
@@ -45,7 +45,7 @@ const FALLBACK_RESOURCES: Resource[] = [
     title: "Nonviolent Communication",
     description:
       "Marshall Rosenberg's foundational guide to compassionate communication that has transformed conflict resolution in schools, workplaces, and communities worldwide.",
-    url: "#",
+    url: "https://books.google.com/books/about/Nonviolent_Communication.html?id=A3qACgAAQBAJ",
   },
   {
     id: BigInt(6),
@@ -53,7 +53,7 @@ const FALLBACK_RESOURCES: Resource[] = [
     title: "The Anatomy of a Conflict",
     description:
       "A documentary series examining the root causes of five major conflicts, and the peace processes that eventually brought resolution — or failed to.",
-    url: "#",
+    url: "https://www.youtube.com/watch?v=wdpDM6EqMxU",
   },
 ];
 
@@ -72,12 +72,25 @@ const TYPE_COLORS: Record<string, string> = {
 export function ResourcesSection() {
   const [activeTab, setActiveTab] = useState("All");
   const { data: resources, isLoading } = useResources();
-  const displayResources =
-    resources && resources.length > 0 ? resources : FALLBACK_RESOURCES;
+
+  // Use fallback resources, but replace any backend entry with url "#" with real URLs
+  const backendResources = resources && resources.length > 0 ? resources : [];
+  const mergedResources =
+    backendResources.length > 0
+      ? backendResources.map((r, i) =>
+          !r.url || r.url === "#"
+            ? {
+                ...r,
+                url: FALLBACK_RESOURCES[i]?.url ?? FALLBACK_RESOURCES[0].url,
+              }
+            : r,
+        )
+      : FALLBACK_RESOURCES;
+
   const filtered =
     activeTab === "All"
-      ? displayResources
-      : displayResources.filter((r) => r.typ === activeTab);
+      ? mergedResources
+      : mergedResources.filter((r) => r.typ === activeTab);
 
   return (
     <section id="resources" className="py-24 section-light">
@@ -160,6 +173,7 @@ export function ResourcesSection() {
                       href={resource.url}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       View Resource <ExternalLink className="w-3 h-3" />
                     </a>

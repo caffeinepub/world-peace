@@ -8,116 +8,35 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const ContactSignup = IDL.Record({
-  'name' : IDL.Text,
-  'email' : IDL.Text,
-  'message' : IDL.Text,
-});
-export const PeacePledge = IDL.Record({
-  'name' : IDL.Text,
-  'message' : IDL.Text,
-});
-export const PeaceStory = IDL.Record({
+export const Time = IDL.Int;
+export const Message = IDL.Record({
   'id' : IDL.Nat,
-  'region' : IDL.Text,
-  'title' : IDL.Text,
-  'imageHint' : IDL.Text,
-  'author' : IDL.Text,
-  'summary' : IDL.Text,
-});
-export const CommunityMessage = IDL.Record({
-  'author' : IDL.Text,
-  'message' : IDL.Text,
-  'timestamp' : IDL.Int,
-});
-export const Resource = IDL.Record({
-  'id' : IDL.Nat,
-  'typ' : IDL.Text,
-  'url' : IDL.Text,
-  'title' : IDL.Text,
-  'description' : IDL.Text,
-});
-export const WorldInitiative = IDL.Record({
-  'id' : IDL.Nat,
-  'latitude' : IDL.Float64,
-  'title' : IDL.Text,
   'country' : IDL.Text,
-  'description' : IDL.Text,
-  'longitude' : IDL.Float64,
+  'name' : IDL.Text,
+  'message' : IDL.Text,
+  'timestamp' : Time,
 });
 
 export const idlService = IDL.Service({
-  'getContactSignups' : IDL.Func([], [IDL.Vec(ContactSignup)], ['query']),
-  'getNewsletterSignups' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
-  'getPeacePledges' : IDL.Func([], [IDL.Vec(PeacePledge)], ['query']),
-  'getPeaceStories' : IDL.Func([], [IDL.Vec(PeaceStory)], ['query']),
-  'getRecentCommunityMessages' : IDL.Func(
-      [],
-      [IDL.Vec(CommunityMessage)],
-      ['query'],
-    ),
-  'getResources' : IDL.Func([], [IDL.Vec(Resource)], ['query']),
-  'getWorldInitiatives' : IDL.Func([], [IDL.Vec(WorldInitiative)], ['query']),
-  'postCommunityMessage' : IDL.Func([IDL.Text, IDL.Text], [], []),
-  'signupNewsletter' : IDL.Func([IDL.Text], [], []),
-  'submitContactForm' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
-  'submitPeacePledge' : IDL.Func([IDL.Text, IDL.Text], [], []),
+  'getAllMessages' : IDL.Func([], [IDL.Vec(Message)], ['query']),
+  'submitMessage' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [IDL.Nat], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
-  const ContactSignup = IDL.Record({
-    'name' : IDL.Text,
-    'email' : IDL.Text,
-    'message' : IDL.Text,
-  });
-  const PeacePledge = IDL.Record({ 'name' : IDL.Text, 'message' : IDL.Text });
-  const PeaceStory = IDL.Record({
+  const Time = IDL.Int;
+  const Message = IDL.Record({
     'id' : IDL.Nat,
-    'region' : IDL.Text,
-    'title' : IDL.Text,
-    'imageHint' : IDL.Text,
-    'author' : IDL.Text,
-    'summary' : IDL.Text,
-  });
-  const CommunityMessage = IDL.Record({
-    'author' : IDL.Text,
-    'message' : IDL.Text,
-    'timestamp' : IDL.Int,
-  });
-  const Resource = IDL.Record({
-    'id' : IDL.Nat,
-    'typ' : IDL.Text,
-    'url' : IDL.Text,
-    'title' : IDL.Text,
-    'description' : IDL.Text,
-  });
-  const WorldInitiative = IDL.Record({
-    'id' : IDL.Nat,
-    'latitude' : IDL.Float64,
-    'title' : IDL.Text,
     'country' : IDL.Text,
-    'description' : IDL.Text,
-    'longitude' : IDL.Float64,
+    'name' : IDL.Text,
+    'message' : IDL.Text,
+    'timestamp' : Time,
   });
   
   return IDL.Service({
-    'getContactSignups' : IDL.Func([], [IDL.Vec(ContactSignup)], ['query']),
-    'getNewsletterSignups' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
-    'getPeacePledges' : IDL.Func([], [IDL.Vec(PeacePledge)], ['query']),
-    'getPeaceStories' : IDL.Func([], [IDL.Vec(PeaceStory)], ['query']),
-    'getRecentCommunityMessages' : IDL.Func(
-        [],
-        [IDL.Vec(CommunityMessage)],
-        ['query'],
-      ),
-    'getResources' : IDL.Func([], [IDL.Vec(Resource)], ['query']),
-    'getWorldInitiatives' : IDL.Func([], [IDL.Vec(WorldInitiative)], ['query']),
-    'postCommunityMessage' : IDL.Func([IDL.Text, IDL.Text], [], []),
-    'signupNewsletter' : IDL.Func([IDL.Text], [], []),
-    'submitContactForm' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
-    'submitPeacePledge' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'getAllMessages' : IDL.Func([], [IDL.Vec(Message)], ['query']),
+    'submitMessage' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [IDL.Nat], []),
   });
 };
 

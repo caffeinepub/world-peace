@@ -1,8 +1,8 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useWorldInitiatives } from "@/hooks/useQueries";
+import type { WorldInitiative } from "@/hooks/useQueries";
 import { X } from "lucide-react";
 import { useState } from "react";
-import type { WorldInitiative } from "../backend.d";
 
 const FALLBACK_INITIATIVES: WorldInitiative[] = [
   {

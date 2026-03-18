@@ -19,7 +19,7 @@ export function AuthorSection() {
             <div className="w-44 h-44 md:w-52 md:h-52 rounded-2xl overflow-hidden ring-4 ring-blue-200 dark:ring-blue-700 shadow-lg">
               <img
                 src="/assets/uploads/IMG_20260317_111256_792-1.jpg"
-                alt="Srishty Singh Bhardwaj - Author"
+                alt="Srishty Bhardwaj from India - Author"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -33,19 +33,19 @@ export function AuthorSection() {
               </span>
             </div>
             <h3 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-1">
-              Srishty Singh Bhardwaj
+              Srishty Bhardwaj
             </h3>
             <p className="text-blue-500 dark:text-blue-400 font-medium mb-4">
-              Age 16
+              India
             </p>
             <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-base md:text-lg">
-              Srishty Singh Bhardwaj is a 16-year-old student and the creator of
-              this Global Peace website. She believes that young people can play
-              an important role in building a more peaceful and united world.
-              She is passionate about learning, creativity, and exploring new
-              ideas. Srishty Singh Bhardwaj describes herself as a multitalented
-              and multitasking individual who enjoys working on meaningful
-              projects that inspire positivity, unity, and global understanding.
+              Srishty Bhardwaj is a student from India and the creator of this
+              Global Peace website. She believes that young people can play an
+              important role in building a more peaceful and united world. She
+              is passionate about learning, creativity, and exploring new ideas.
+              Srishty Bhardwaj describes herself as a multitalented and
+              multitasking individual who enjoys working on meaningful projects
+              that inspire positivity, unity, and global understanding.
             </p>
             <div className="mt-5 flex flex-wrap gap-2 justify-center md:justify-start">
               {["Peace Advocate", "Student", "Creator", "Global Thinker"].map(
