@@ -1,59 +1,98 @@
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useResources } from "@/hooks/useQueries";
-import type { Resource } from "@/hooks/useQueries";
 import { BookOpen, ExternalLink, FileText, Play } from "lucide-react";
 import { useState } from "react";
 
-const FALLBACK_RESOURCES: Resource[] = [
+interface Resource {
+  id: number;
+  typ: "Book" | "Article" | "Video";
+  title: string;
+  description: string;
+  url: string;
+  youtubeId?: string;
+}
+
+const RESOURCES: Resource[] = [
   {
-    id: BigInt(1),
+    id: 1,
     typ: "Book",
     title: "A Long Walk to Freedom",
     description:
       "Nelson Mandela's autobiography traces his extraordinary journey from rural South Africa to the presidency, offering profound lessons on resilience and reconciliation.",
-    url: "https://books.google.com/books/about/Long_Walk_to_Freedom.html?id=E7dSNAAACAAJ",
+    url: "https://books.google.com/books?id=E7dSNAAACAAJ",
   },
   {
-    id: BigInt(2),
-    typ: "Article",
-    title: "The Science of Empathy",
-    description:
-      "A groundbreaking study from Stanford University explores how empathy practice can reduce prejudice and improve conflict resolution outcomes across diverse groups.",
-    url: "https://greatergood.berkeley.edu/article/item/how_empathy_can_break_down_prejudice",
-  },
-  {
-    id: BigInt(3),
-    typ: "Video",
-    title: "Building Peace from the Ground Up",
-    description:
-      "A TED Talk by Nobel Peace Prize laureate Leymah Gbowee on how ordinary women ended Liberia's devastating civil war through nonviolent activism.",
-    url: "https://www.youtube.com/watch?v=5psHFqYaSbE",
-  },
-  {
-    id: BigInt(4),
-    typ: "Article",
-    title: "Youth-Led Peace Initiatives: A Global Review",
-    description:
-      "The UN Peace and Security Council's review of youth-led peacebuilding programs and their measurable impact on community-level violence.",
-    url: "https://www.un.org/peacebuilding/youth",
-  },
-  {
-    id: BigInt(5),
+    id: 2,
     typ: "Book",
     title: "Nonviolent Communication",
     description:
       "Marshall Rosenberg's foundational guide to compassionate communication that has transformed conflict resolution in schools, workplaces, and communities worldwide.",
-    url: "https://books.google.com/books/about/Nonviolent_Communication.html?id=A3qACgAAQBAJ",
+    url: "https://books.google.com/books?id=A3qACgAAQBAJ",
   },
   {
-    id: BigInt(6),
-    typ: "Video",
-    title: "The Anatomy of a Conflict",
+    id: 3,
+    typ: "Book",
+    title: "The Art of Peace",
     description:
-      "A documentary series examining the root causes of five major conflicts, and the peace processes that eventually brought resolution — or failed to.",
-    url: "https://www.youtube.com/watch?v=wdpDM6EqMxU",
+      "A collection of teachings by Morihei Ueshiba, founder of Aikido, on achieving harmony, resolving conflict peacefully, and cultivating inner strength for a better world.",
+    url: "https://books.google.com/books?q=the+art+of+peace+morihei+ueshiba",
+  },
+  {
+    id: 4,
+    typ: "Article",
+    title: "The Science of Empathy",
+    description:
+      "A groundbreaking study from Berkeley explores how empathy practice can reduce prejudice and improve conflict resolution outcomes across diverse groups.",
+    url: "https://greatergood.berkeley.edu/article/item/how_empathy_can_break_down_prejudice",
+  },
+  {
+    id: 5,
+    typ: "Article",
+    title: "Youth-Led Peace Initiatives: A Global Review",
+    description:
+      "The UN Peacebuilding Support Office's review of youth-led programs and their measurable impact on community-level violence reduction worldwide.",
+    url: "https://www.un.org/peacebuilding/youth",
+  },
+  {
+    id: 6,
+    typ: "Article",
+    title: "How Dialogue Ends Wars",
+    description:
+      "An in-depth analysis from the United States Institute of Peace on the role of grassroots dialogue, mediation, and diplomacy in ending armed conflicts.",
+    url: "https://www.usip.org/publications/2021/12/how-to-prevent-armed-conflict",
+  },
+  {
+    id: 7,
+    typ: "Video",
+    title: "Building Peace from the Ground Up",
+    description:
+      "Nobel Peace Prize laureate Leymah Gbowee shares how ordinary women ended Liberia's civil war through nonviolent activism in this powerful TED Talk.",
+    url: "https://www.youtube.com/watch?v=5psHFqYaSbE",
+    youtubeId: "5psHFqYaSbE",
+  },
+  {
+    id: 8,
+    typ: "Video",
+    title: "Why Peace Is Always Possible",
+    description:
+      "Harvard psychologist Steven Pinker presents compelling evidence that violence has declined over millennia and explains the forces driving humanity toward greater peace.",
+    url: "https://www.youtube.com/watch?v=ramBFRt1Uzk",
+    youtubeId: "ramBFRt1Uzk",
+  },
+  {
+    id: 9,
+    typ: "Video",
+    title: "The Power of Nonviolence",
+    description:
+      "A documentary-style TED Talk exploring Mahatma Gandhi's philosophy of nonviolence and how its principles continue to inspire peace movements around the world today.",
+    url: "https://www.youtube.com/watch?v=SOBl_bvnZpA",
+    youtubeId: "SOBl_bvnZpA",
   },
 ];
 
@@ -71,26 +110,12 @@ const TYPE_COLORS: Record<string, string> = {
 
 export function ResourcesSection() {
   const [activeTab, setActiveTab] = useState("All");
-  const { data: resources, isLoading } = useResources();
-
-  // Use fallback resources, but replace any backend entry with url "#" with real URLs
-  const backendResources = resources && resources.length > 0 ? resources : [];
-  const mergedResources =
-    backendResources.length > 0
-      ? backendResources.map((r, i) =>
-          !r.url || r.url === "#"
-            ? {
-                ...r,
-                url: FALLBACK_RESOURCES[i]?.url ?? FALLBACK_RESOURCES[0].url,
-              }
-            : r,
-        )
-      : FALLBACK_RESOURCES;
+  const [videoModal, setVideoModal] = useState<Resource | null>(null);
 
   const filtered =
     activeTab === "All"
-      ? mergedResources
-      : mergedResources.filter((r) => r.typ === activeTab);
+      ? RESOURCES
+      : RESOURCES.filter((r) => r.typ === activeTab);
 
   return (
     <section id="resources" className="py-24 section-light">
@@ -120,70 +145,137 @@ export function ResourcesSection() {
           </Tabs>
         </div>
 
-        {isLoading ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }, (_, i) => i).map((i) => (
-              <Skeleton key={`res-skel-${i}`} className="h-48 rounded-2xl" />
-            ))}
-          </div>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((resource, i) => {
-              const Icon = TYPE_ICONS[resource.typ] ?? FileText;
-              const ocidMap = [
-                "resources.card.1",
-                "resources.card.2",
-                "resources.card.3",
-                "resources.card.4",
-                "resources.card.5",
-                "resources.card.6",
-              ];
-              return (
-                <div
-                  key={resource.id.toString()}
-                  data-ocid={ocidMap[i] ?? `resources.item.${i + 1}`}
-                  className="rounded-2xl border border-border bg-card shadow-xs hover:shadow-peace transition-all duration-300 hover:-translate-y-1 p-6"
-                >
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <span
-                      className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                        TYPE_COLORS[resource.typ] ??
-                        "bg-muted text-muted-foreground"
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filtered.map((resource, i) => {
+            const Icon = TYPE_ICONS[resource.typ] ?? FileText;
+            const isVideo = resource.typ === "Video";
+            return (
+              <div
+                key={resource.id}
+                data-ocid={`resources.card.${i + 1}`}
+                className="rounded-2xl border border-border bg-card shadow-xs hover:shadow-peace transition-all duration-300 hover:-translate-y-1 p-6 flex flex-col"
+              >
+                <div className="flex items-start justify-between gap-3 mb-4">
+                  <div
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      isVideo ? "bg-red-100 dark:bg-red-900/30" : "bg-muted"
+                    }`}
+                  >
+                    <Icon
+                      className={`w-5 h-5 ${
+                        isVideo
+                          ? "text-red-600 dark:text-red-400"
+                          : "text-muted-foreground"
                       }`}
-                    >
-                      {resource.typ}
-                    </span>
+                    />
                   </div>
-                  <h3 className="font-display text-base font-bold mb-2 leading-snug">
-                    {resource.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 mb-4">
-                    {resource.description}
-                  </p>
+                  <span
+                    className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                      TYPE_COLORS[resource.typ] ??
+                      "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {resource.typ}
+                  </span>
+                </div>
+
+                {isVideo && resource.youtubeId && (
+                  <button
+                    type="button"
+                    className="relative mb-4 rounded-xl overflow-hidden bg-black aspect-video w-full group focus:outline-none focus:ring-2 focus:ring-red-500"
+                    onClick={() => setVideoModal(resource)}
+                    aria-label={`Watch video: ${resource.title}`}
+                  >
+                    <img
+                      src={`https://img.youtube.com/vi/${resource.youtubeId}/hqdefault.jpg`}
+                      alt={resource.title}
+                      className="w-full h-full object-cover opacity-80 group-hover:opacity-90 transition-opacity"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <Play
+                          className="w-5 h-5 text-white ml-0.5"
+                          fill="white"
+                        />
+                      </div>
+                    </div>
+                  </button>
+                )}
+
+                <h3 className="font-display text-base font-bold mb-2 leading-snug">
+                  {resource.title}
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed line-clamp-3 mb-4 flex-1">
+                  {resource.description}
+                </p>
+
+                {isVideo ? (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-primary gap-1.5 p-0 h-auto hover:underline"
+                    className="text-red-600 dark:text-red-400 gap-1.5 p-0 h-auto hover:underline self-start"
+                    onClick={() => setVideoModal(resource)}
+                  >
+                    <Play className="w-3.5 h-3.5" /> Watch Video
+                  </Button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-primary gap-1.5 p-0 h-auto hover:underline self-start"
                     asChild
                   >
                     <a
                       href={resource.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
                     >
                       View Resource <ExternalLink className="w-3 h-3" />
                     </a>
                   </Button>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
+
+      <Dialog
+        open={!!videoModal}
+        onOpenChange={(open) => !open && setVideoModal(null)}
+      >
+        <DialogContent className="max-w-3xl w-full p-0 overflow-hidden rounded-2xl">
+          <DialogHeader className="px-6 pt-5 pb-3">
+            <DialogTitle className="text-lg font-bold leading-snug">
+              {videoModal?.title}
+            </DialogTitle>
+          </DialogHeader>
+          {videoModal?.youtubeId && (
+            <div className="aspect-video w-full">
+              <iframe
+                src={`https://www.youtube.com/embed/${videoModal.youtubeId}?autoplay=1&rel=0`}
+                title={videoModal?.title ?? "Video"}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            </div>
+          )}
+          <div className="px-6 py-4">
+            <p className="text-muted-foreground text-sm">
+              {videoModal?.description}
+            </p>
+            <a
+              href={videoModal?.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline mt-2"
+            >
+              Open on YouTube <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
