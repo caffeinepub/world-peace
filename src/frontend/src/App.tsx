@@ -5,8 +5,10 @@ import { ChallengesSection } from "@/components/ChallengesSection";
 import { CommunitySection } from "@/components/CommunitySection";
 import { ContactSection } from "@/components/ContactSection";
 import { Footer } from "@/components/Footer";
+import { GlobalLeadersSection } from "@/components/GlobalLeadersSection";
 import { HeroSection } from "@/components/HeroSection";
 import { Navigation } from "@/components/Navigation";
+import { PeaceInActionSection } from "@/components/PeaceInActionSection";
 import { ResourcesSection } from "@/components/ResourcesSection";
 import { SolutionsSection } from "@/components/SolutionsSection";
 import { StoriesSection } from "@/components/StoriesSection";
@@ -55,6 +57,8 @@ export default function App() {
         <WorldMapSection />
         <ActionSection />
         <CommunitySection />
+        <GlobalLeadersSection />
+        <PeaceInActionSection />
         <ResourcesSection />
         <ContactSection />
         <AuthorSection />
